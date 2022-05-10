@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.4.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id "org.openapi.generator" version "5.3.0"
 	id 'java'
 }
 
@@ -15,10 +16,32 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-redis:1.4.7.RELEASE'
+
+	implementation 'redis.clients:jedis'
 	runtimeOnly 'mysql:mysql-connector-java'
+	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.24'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+openApiGenerate {
+	generatorName = "java"
+	inputSpec = "$rootDir/src/main/resources/weather-api.yaml".toString()
+	outputDir = "$buildDir/generated".toString()
+	apiPackage = "org.openapi.weather.api"
+	invokerPackage = "org.openapi.weather.invoker"
+	modelPackage = "org.openapi.weather.model"
+	configOptions = [
+			dateLibrary: "java8"
+	]
 }
 
 test {
 	useJUnitPlatform()
 }
+
+compileJava.dependsOn tasks.openApiGenerate, tasks.openApiGenerators

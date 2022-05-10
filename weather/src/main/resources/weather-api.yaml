@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: Title
+  description: Title
+  version: 1.0.0
+servers:
+  - url: 'https/api/v1'
+paths:
+  /weather:
+    get:
+      description: Return the weather information to client
+      operationId: getWeatherFromCity
+      parameters:
+        - in: path
+          name: city
+          schema:
+            type: string
+          required: true
+          description: city name
+      responses:
+        '200':
+          description: A weather json
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WeatherResponse'
+        400:
+          $ref: '#/components/responses/IllegalInput'
+        500:
+          $ref: '#/components/responses/GeneralError'
+
+
+components:
+  schemas:
+    GeneralError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    WeatherResponse:
+      type: object
+
+  responses:
+    NotFound:
+      description: Entity not found.
+    IllegalInput:
+      description: Illegal input for operation.
+    GeneralError:
+      description: General Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralError'
+
+
+
+  
